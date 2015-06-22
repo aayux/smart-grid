@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>749</width>
+    <height>554</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout">
+    <item row="0" column="0">
+     <widget class="QFrame" name="frame">
+      <property name="cursor">
+       <cursorShape>OpenHandCursor</cursorShape>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>749</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>LeftToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionImport_Layer"/>
+   <addaction name="actionPlot_Sensors"/>
+   <addaction name="separator"/>
+  </widget>
+  <action name="actionImport_Layer">
+   <property name="icon">
+    <iconset>
+     <normaloff>../icons/import.png</normaloff>../icons/import.png</iconset>
+   </property>
+   <property name="text">
+    <string>Import Layer</string>
+   </property>
+   <property name="toolTip">
+    <string>Import Layer</string>
+   </property>
+  </action>
+  <action name="actionPlot_Sensors">
+   <property name="icon">
+    <iconset>
+     <normaloff>../icons/plot.png</normaloff>
+     <normalon>plot.png</normalon>../icons/plot.png</iconset>
+   </property>
+   <property name="text">
+    <string>Plot Sensors</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
