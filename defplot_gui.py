@@ -18,35 +18,6 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_MainWindow(object):
-    """
-	def on_actionImport_Layer_triggered(self, checked = None): 
-    	if checked is None: 
-       		return
-       	      	
-       	fileName = QFileDialog.getOpenFileName(self, "Open TIF File", ".", "Image Files (*.tif)") 
-		fileInfo = QFileInfo(fileName)
-		baseName = fileInfo.baseName()
-		layer = QgsRasterLayer(fileName, baseName)
-
-		if not layer.isValid():
-  			print "Layer failed to load!"
-
-        # Change the color of the layer to gray
-        #symbols = layer.renderer().symbols()
-        #ymbol = symbols[0]
-        #ymbol.setFillColor(QColor.fromRgb(192,192,192))
-
-        # Add layer to the registry
-       	QgsMapLayerRegistry.instance().addMapLayer(layer);
-        # Set extent to the extent of our layer
-       	self.canvas.setExtent(layer.extent())
-       	
-        # Set up the map canvas layer set
-       	cl = QgsMapCanvasLayer(layer)
-       	layers = [cl]
-       	self.canvas.setLayerSet(layers)
-    """
-    
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.resize(749, 554)
@@ -74,10 +45,6 @@ class Ui_MainWindow(object):
         MainWindow.addToolBar(QtCore.Qt.LeftToolBarArea, self.toolBar)
         
         self.actionImport_Layer = QtGui.QAction(MainWindow)
-        #self.actionImport_Layer.triggered.connect(QtGui.qApp.quit)
-        #self.actionImport_Layer.setCheckable(True)
-        #self.actionImport_Layer.setChecked(True)
-        #self.actionImport_Layer.triggered.connect(self.on_actionImport_Layer_triggered)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8("icons/import.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionImport_Layer.setIcon(icon)
