@@ -11,7 +11,7 @@ Current developments -
 
 Now working on -
 
-- Tool to import maps directky from Google Maps/Earth
+- Tool to import maps directly from Google or Bing
 
 - Appropriate data structure for data handling and analysis
 
