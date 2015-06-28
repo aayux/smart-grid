@@ -2,4 +2,4 @@
 # Change to local QGIS install
 export QGISHOME=/usr
 export PYTHONPATH=$QGISHOME/share/qgis/python
-python DefPlot.py
+python smart_grid.py
