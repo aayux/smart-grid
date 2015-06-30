@@ -29,6 +29,7 @@ class SmartGrid(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.layers = []
         self.root_flag = False
+        self.temp_layer=None
 
         self.setWindowTitle('Smart Grid')
         self.actionImport_Rlayer.triggered.connect(self.on_actionImport_Rlayer_toggled)
@@ -80,11 +81,11 @@ class SmartGrid(QMainWindow, Ui_MainWindow):
         fileInfo = QFileInfo(fileName)
         baseName = fileInfo.baseName()
         raster_layer = QgsRasterLayer(fileName, baseName)
-        if not raster_layer.isValid():
+      	if not raster_layer.isValid():
             print 'Layer failed to load!'
 
         # Add layer to the registry....
-
+        self.temp_layer=raster_layer
         QgsMapLayerRegistry.instance().addMapLayer(raster_layer, False)
         if self.root_flag is False:
             rootnode = self.root.insertLayer(0, raster_layer)
@@ -104,9 +105,18 @@ class SmartGrid(QMainWindow, Ui_MainWindow):
         if not vector_layer.isValid():
             print 'Layer failed to load!'
 
+        
         # Add layer to the registry
-
+        palyr= QgsPalLayerSettings() 
+        palyr.readFromLayer(vector_layer) 
+       	self.canvas.mapRenderer().setLabelingEngine(QgsPalLabeling())
+        palyr.enabled = True 
+        palyr.fieldName = 'Text'
+        palyr.placement= QgsPalLayerSettings.OverPoint
+        palyr.setDataDefinedProperty(QgsPalLayerSettings.Size,True,True,'8','')
+        palyr.writeToLayer(vector_layer)
         QgsMapLayerRegistry.instance().addMapLayer(vector_layer, False)
+        
         if self.root_flag is False:
             rootnode = self.root.insertLayer(0, vector_layer)
             print 'Loaded root'
@@ -118,7 +128,6 @@ class SmartGrid(QMainWindow, Ui_MainWindow):
         self.toolPan = QgsMapToolPan(self.canvas)
         self.toolPan.setAction(self.actionPan)
         self.canvas.setMapTool(self.toolPan)
-
 
 class LoginScreen(QDialog, Ui_Dialog):
 
@@ -166,4 +175,5 @@ def main(argv):
 if __name__ == '__main__':
     main(sys.argv)
 
+			
 			
