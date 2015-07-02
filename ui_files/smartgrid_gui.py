@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'smartgrid_gui.ui'
 #
-# Created: Wed Jul  1 21:27:06 2015
+# Created: Thu Jul  2 11:10:58 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(931, 555)
+        MainWindow.resize(909, 590)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.gridLayout = QtGui.QGridLayout(self.centralwidget)
@@ -35,36 +35,39 @@ class Ui_MainWindow(object):
         self.frame.setFrameShape(QtGui.QFrame.StyledPanel)
         self.frame.setFrameShadow(QtGui.QFrame.Raised)
         self.frame.setObjectName(_fromUtf8("frame"))
+        self.lineEdit = QtGui.QLineEdit(self.frame)
+        self.lineEdit.setGeometry(QtCore.QRect(260, 250, 113, 27))
+        self.lineEdit.setObjectName(_fromUtf8("lineEdit"))
         self.gridLayout.addWidget(self.frame, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
-        self.statusbar = QtGui.QStatusBar(MainWindow)
-        self.statusbar.setObjectName(_fromUtf8("statusbar"))
-        MainWindow.setStatusBar(self.statusbar)
         self.toolBar = QtGui.QToolBar(MainWindow)
         self.toolBar.setObjectName(_fromUtf8("toolBar"))
         MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
+        self.statusbar = QtGui.QStatusBar(MainWindow)
+        self.statusbar.setObjectName(_fromUtf8("statusbar"))
+        MainWindow.setStatusBar(self.statusbar)
         self.actionImport_Vlayer = QtGui.QAction(MainWindow)
         self.actionImport_Vlayer.setCheckable(True)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8("/home/pranay360/apps/Smart-Grid-master/images/v_import.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8("../images/v_import.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionImport_Vlayer.setIcon(icon)
         self.actionImport_Vlayer.setObjectName(_fromUtf8("actionImport_Vlayer"))
         self.actionImport_Rlayer = QtGui.QAction(MainWindow)
         self.actionImport_Rlayer.setCheckable(True)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(_fromUtf8("/home/pranay360/apps/Smart-Grid-master/images/r_import.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(_fromUtf8("../images/r_import.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionImport_Rlayer.setIcon(icon1)
         self.actionImport_Rlayer.setObjectName(_fromUtf8("actionImport_Rlayer"))
         self.actionPlot_Sensors = QtGui.QAction(MainWindow)
         self.actionPlot_Sensors.setCheckable(True)
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(_fromUtf8("/home/pranay360/apps/Smart-Grid-master/images/plot.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(_fromUtf8("../images/plot.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionPlot_Sensors.setIcon(icon2)
         self.actionPlot_Sensors.setObjectName(_fromUtf8("actionPlot_Sensors"))
         self.actionPan = QtGui.QAction(MainWindow)
         self.actionPan.setCheckable(True)
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap(_fromUtf8("/home/pranay360/apps/Smart-Grid-master/images/pan.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon3.addPixmap(QtGui.QPixmap(_fromUtf8("../images/pan.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionPan.setIcon(icon3)
         self.actionPan.setObjectName(_fromUtf8("actionPan"))
         self.actionImport_PGlayer = QtGui.QAction(MainWindow)

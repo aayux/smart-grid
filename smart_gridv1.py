@@ -21,42 +21,37 @@ from pgconnect_gui import Ui_pgDialog
 # before running the application
 
 QGIS_PREFIX = os.getenv('QGISHOME')
-uri=QgsDataSourceURI()
+hname='localhost'
+port='5432'
+dbname='address'
+uname='pranay360'
+pwd='1234'
 class pgconnect(QDialog,Ui_pgDialog):
-    global uri
+    global hname,port,dbname,uname,pwd
     def __init__(self, parent=None):
         super(pgconnect, self).__init__(parent)
         self.setuppgUi(self)
         self.pgpushButton.clicked.connect(self.onclick_pglogin)
-        self.hname='localhost'
-        self.port='5432'
-        self.dbname=None
-        self.uname=None
-        self.pwd=None
         self.move(QDesktopWidget().availableGeometry().center() - self.frameGeometry().center())
+        self.show()
      
     def onclick_pglogin(self):
         print 'pass1'
-        self.dbname=self.pglineEdit_3.text()
-    	self.uname=self.pglineEdit_4.text()
-    	self.pwd=self.pglineEdit_5.text()
-    	print "lol"
-    	uri.setConnection(self.hname, self.port, str(self.dbname), str(self.uname), str(self.pwd))
-    	print "1"
-    	uri.setDataSource("public", "range", "the_geom",'', "id")
-    	print "2"
+        dbname=self.pglineEdit_3.text()
+    	uname=self.pglineEdit_4.text()
+    	pwd=self.pglineEdit_5.text()
     	self.close()
     	print 'pass2'
         
 
 class SmartGrid(QMainWindow, Ui_MainWindow):
-    global uri
+    global hname,port,dbname,uname,pwd
     def __init__(self, parent=None):
         super(SmartGrid, self).__init__(parent)
         self.setupUi(self)
         self.root_flag = False
         
-        
+        self.uri = QgsDataSourceURI()
         self.setWindowTitle('Smart Grid')
         self.actionImport_Rlayer.triggered.connect(self.onactionImport_Rlayer_toggled)
         self.actionImport_Vlayer.triggered.connect(self.onactionImport_Vlayer_toggled)
@@ -134,6 +129,7 @@ class SmartGrid(QMainWindow, Ui_MainWindow):
             print 'Layer failed to load!'
             return
 
+        
         # Add layer to the registry
         palyr= QgsPalLayerSettings()
         self.canvas.mapRenderer().setLabelingEngine(QgsPalLabeling())
@@ -156,12 +152,16 @@ class SmartGrid(QMainWindow, Ui_MainWindow):
     
     def onactionImport_PGlayer_toggled(self):
         print "abcd"
-        self.dlg= pgconnect(self)
-        self.dlg.show()
-        print "back"
-        self.dlg.exec_()
+        #self.dlg= pgconnect(self)
+        #self.dlg.exec_()
         print "done"
-        vlayer = QgsVectorLayer(uri.uri(), "people", "postgres")
+        print hname,port,type(dbname),uname,pwd
+    	self.uri.setConnection(hname, port, dbname, uname, pwd)
+    	print "1"
+    	
+    	self.uri.setDataSource("public", "range", "the_geom",'', "id")
+    	print "2"
+    	vlayer = QgsVectorLayer(self.uri.uri(), "people", "postgres")
     	print "3"
     	if not vlayer.isValid():
             print 'Layer failed to load!'
@@ -173,6 +173,7 @@ class SmartGrid(QMainWindow, Ui_MainWindow):
             self.root_flag = True
         else:
             self.root.insertLayer(0, vlayer)
+    	
 	
     def click_to_pan(self):
         self.toolPan = QgsMapToolPan(self.canvas)
