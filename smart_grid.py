@@ -63,7 +63,7 @@ class MapCoords(object):
     self.latlon.setFrameStyle(QFrame.StyledPanel)
     self.mainwindow.statusbar.addPermanentWidget(self.latlon)
 
-  # Signal handeler for updating coord display
+  # Signal handler for updating coord display
   def updateCoordsDisplay(self, point):
 
   	capture_string = QString(str(point.x()) + " , " + str(point.y()))
