@@ -16,7 +16,7 @@ Now working on -
 
 Known issues -
 
-- Dataset size too large, slows down application – possible solution using *raster2psql* directly import through database entry
+- Dataset size too large, slows down application – possible solution using *raster2psql*, directly import through database entry
 
 ---------------------------------
 
