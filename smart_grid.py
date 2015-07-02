@@ -4,35 +4,38 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtCore import QObject, pyqtSlot
+
 from qgis.core import *
 from qgis.gui import *
 from qgis.utils import *
 
-import sys
+import sys, string
 import os
+import pdb
 
 # Import GUI files
 
 from smartgrid_gui import Ui_MainWindow
 from login_gui import Ui_Dialog
-from pgconnect_gui import Ui_pgDialog
+from connect_gui import Ui_pgDialog
 
 # Environment variable QGISHOME must be set to the install directory
 # before running the application
 
 QGIS_PREFIX = os.getenv('QGISHOME')
-uri=QgsDataSourceURI()
+uri = QgsDataSourceURI()
+
 class pgconnect(QDialog,Ui_pgDialog):
     global uri
     def __init__(self, parent=None):
         super(pgconnect, self).__init__(parent)
         self.setuppgUi(self)
         self.pgpushButton.clicked.connect(self.onclick_pglogin)
-        self.hname='localhost'
-        self.port='5432'
-        self.dbname=None
-        self.uname=None
-        self.pwd=None
+        self.hname ='localhost'
+        self.port ='5432'
+        self.dbname = None
+        self.uname = None
+        self.pwd = None
         self.move(QDesktopWidget().availableGeometry().center() - self.frameGeometry().center())
      
     def onclick_pglogin(self):
@@ -47,11 +50,28 @@ class pgconnect(QDialog,Ui_pgDialog):
     	print "2"
     	self.close()
     	print 'pass2'
-        
+            
+class MapCoords(object):
+  def __init__(self, mainwindow):
+    self.mainwindow = mainwindow
+    # This one is to capture the mouse move for coordinate display
+    
+    QObject.connect(mainwindow.canvas, SIGNAL('xyCoordinates(const QgsPoint&)'), self.updateCoordsDisplay)
+    self.latlon = QLabel("0.0 , 0.0")
+    self.latlon.setFixedWidth(300)
+    self.latlon.setAlignment(Qt.AlignHCenter)
+    self.latlon.setFrameStyle(QFrame.StyledPanel)
+    self.mainwindow.statusbar.addPermanentWidget(self.latlon)
+
+  # Signal handeler for updating coord display
+  def updateCoordsDisplay(self, point):
+
+  	capture_string = QString(str(point.x()) + " , " + str(point.y()))
+  	self.latlon.setText(capture_string)
 
 class SmartGrid(QMainWindow, Ui_MainWindow):
     global uri
-    def __init__(self, parent=None):
+    def __init__(self, parent = None):
         super(SmartGrid, self).__init__(parent)
         self.setupUi(self)
         self.root_flag = False
@@ -66,6 +86,10 @@ class SmartGrid(QMainWindow, Ui_MainWindow):
         self.canvas = QgsMapCanvas()
         self.canvas.useImageToRender(False)
 		
+		# New Map Coords display in status bar
+        
+        self.map_coords = MapCoords(self)
+
         # Reference to root node of layer tree
 
         self.root = QgsProject.instance().layerTreeRoot()
@@ -73,8 +97,7 @@ class SmartGrid(QMainWindow, Ui_MainWindow):
         # Convert project into a layer tree so
         # that the layers appear on the canvas
 
-        self.bridge = QgsLayerTreeMapCanvasBridge(self.root,
-                self.canvas)
+        self.bridge = QgsLayerTreeMapCanvasBridge(self.root, self.canvas)
 
         self.canvas.show()
 
@@ -83,10 +106,9 @@ class SmartGrid(QMainWindow, Ui_MainWindow):
         self.model = QgsLayerTreeModel(self.root)
         self.model.setFlag(QgsLayerTreeModel.AllowNodeReorder)
         self.model.setFlag(QgsLayerTreeModel.AllowNodeChangeVisibility)
-        self.model.setFlag(QgsLayerTreeModel.AllowNodeChangeVisibility)
         self.view = QgsLayerTreeView()
         self.view.setModel(self.model)
-
+                
         # Dock legend to main window
 
         self.LegendDock = QDockWidget('Layer Tree', self)
@@ -100,7 +122,7 @@ class SmartGrid(QMainWindow, Ui_MainWindow):
         self.layout = QVBoxLayout(self.frame)
         self.layout.addWidget(self.canvas)
     
-    def onactionImport_Rlayer_toggled(self, checked=None):
+    def onactionImport_Rlayer_toggled(self, checked = None):
         if checked is None:
             return
         fileName = QFileDialog.getOpenFileName(self, 'Open Layer', '.',
@@ -156,7 +178,7 @@ class SmartGrid(QMainWindow, Ui_MainWindow):
     
     def onactionImport_PGlayer_toggled(self):
         print "abcd"
-        self.dlg= pgconnect(self)
+        self.dlg = pgconnect(self)
         self.dlg.show()
         print "back"
         self.dlg.exec_()
