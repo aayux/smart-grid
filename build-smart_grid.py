@@ -21,13 +21,14 @@ from pgconnect_gui import Ui_pgDialog
 # before running the application
 
 QGIS_PREFIX = os.getenv('QGISHOME')
-uri=QgsDataSourceURI()
+uri=None
 class pgconnect(QDialog,Ui_pgDialog):
     global uri
     def __init__(self, parent=None):
         super(pgconnect, self).__init__(parent)
         self.setuppgUi(self)
         self.pgpushButton.clicked.connect(self.onclick_pglogin)
+        uri = QgsDataSourceURI()
         self.hname='localhost'
         self.port='5432'
         self.dbname=None
@@ -37,11 +38,10 @@ class pgconnect(QDialog,Ui_pgDialog):
      
     def onclick_pglogin(self):
         print 'pass1'
-        self.dbname=self.pglineEdit_3.text()
-    	self.uname=self.pglineEdit_4.text()
-    	self.pwd=self.pglineEdit_5.text()
-    	print "lol"
-    	uri.setConnection(self.hname, self.port, str(self.dbname), str(self.uname), str(self.pwd))
+        self.dbname=str(self.pglineEdit_3.text())
+    	self.uname=str(self.pglineEdit_4.text())
+    	self.pwd=str(self.pglineEdit_5.text())
+    	uri.setConnection(hname, port, dbname, uname, pwd)
     	print "1"
     	uri.setDataSource("public", "range", "the_geom",'', "id")
     	print "2"
@@ -158,21 +158,21 @@ class SmartGrid(QMainWindow, Ui_MainWindow):
         print "abcd"
         self.dlg= pgconnect(self)
         self.dlg.show()
-        print "back"
-        self.dlg.exec_()
-        print "done"
-        vlayer = QgsVectorLayer(uri.uri(), "people", "postgres")
-    	print "3"
-    	if not vlayer.isValid():
-            print 'Layer failed to load!'
-            return
-        QgsMapLayerRegistry.instance().addMapLayer(vlayer, False)
-        if self.root_flag is False:
-            rootnode = self.root.insertLayer(0, vlayer)
-            print 'Loaded root'
-            self.root_flag = True
-        else:
-            self.root.insertLayer(0, vlayer)
+        if(self.dlg.exec_())
+            print "done"
+            vlayer = QgsVectorLayer(self.uri.uri(), "people", "postgres")
+    	    print "3"
+    	    if not vlayer.isValid():
+                print 'Layer failed to load!'
+                return
+            QgsMapLayerRegistry.instance().addMapLayer(vlayer, False)
+            if self.root_flag is False:
+                rootnode = self.root.insertLayer(0, vlayer)
+                print 'Loaded root'
+                self.root_flag = True
+            else:
+                self.root.insertLayer(0, vlayer)
+    	
 	
     def click_to_pan(self):
         self.toolPan = QgsMapToolPan(self.canvas)

@@ -6,28 +6,41 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>931</width>
-    <height>555</height>
+    <width>894</width>
+    <height>590</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <widget class="QFrame" name="frame">
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-     </widget>
-    </item>
-   </layout>
+   <widget class="QFrame" name="frame">
+    <property name="geometry">
+     <rect>
+      <x>9</x>
+      <y>9</y>
+      <width>891</width>
+      <height>481</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>500</y>
+      <width>113</width>
+      <height>27</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
     <string>toolBar</string>
@@ -40,9 +53,11 @@
    </attribute>
    <addaction name="actionImport_Vlayer"/>
    <addaction name="actionImport_Rlayer"/>
-   <addaction name="actionPan"/>
+   <addaction name="actionImport_PGlayer"/>
    <addaction name="actionPlot_Sensors"/>
+   <addaction name="actionPan"/>
   </widget>
+  <widget class="QStatusBar" name="statusbar"/>
   <action name="actionImport_Vlayer">
    <property name="checkable">
     <bool>true</bool>
@@ -101,6 +116,14 @@
    </property>
    <property name="toolTip">
     <string>Click to pan</string>
+   </property>
+  </action>
+  <action name="actionImport_PGlayer">
+   <property name="text">
+    <string>Import_PGlayer</string>
+   </property>
+   <property name="toolTip">
+    <string>Import_PGlayer</string>
    </property>
   </action>
  </widget>
