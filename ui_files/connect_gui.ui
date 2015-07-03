@@ -6,41 +6,47 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>307</width>
-    <height>293</height>
+    <width>277</width>
+    <height>395</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QWidget" name="layoutWidget">
+  <widget class="QPushButton" name="pgpushButton">
    <property name="geometry">
     <rect>
-     <x>12</x>
-     <y>10</y>
-     <width>288</width>
-     <height>232</height>
+     <x>90</x>
+     <y>360</y>
+     <width>85</width>
+     <height>26</height>
     </rect>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout_4">
+   <property name="text">
+    <string>Connect</string>
+   </property>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>10</y>
+     <width>214</width>
+     <height>342</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_5">
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
        <widget class="QLabel" name="pglabel_6">
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
-         </font>
-        </property>
         <property name="text">
-         <string>            Connection information</string>
+         <string>      Enter POSTGIS DB Details</string>
         </property>
        </widget>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_6">
+       <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
@@ -78,56 +84,56 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QLabel" name="pglabel_7">
+            <property name="text">
+             <string>Table</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="pglabel_8">
+            <property name="text">
+             <string>Key</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
         <item>
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout">
-            <item>
-             <widget class="QLineEdit" name="pglineEdit">
-              <property name="text">
-               <string>localhost</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
+           <widget class="QLineEdit" name="pglineEdit">
+            <property name="text">
+             <string>localhost</string>
+            </property>
+           </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
-            <item>
-             <widget class="QLineEdit" name="pglineEdit_2">
-              <property name="text">
-               <string>5432</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
+           <widget class="QLineEdit" name="pglineEdit_2">
+            <property name="text">
+             <string>5432</string>
+            </property>
+           </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_3">
-            <item>
-             <widget class="QLineEdit" name="pglineEdit_3"/>
-            </item>
-           </layout>
+           <widget class="QLineEdit" name="pglineEdit_3"/>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_4">
-            <item>
-             <widget class="QLineEdit" name="pglineEdit_4"/>
-            </item>
-           </layout>
+           <widget class="QLineEdit" name="pglineEdit_4"/>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_5">
-            <item>
-             <widget class="QLineEdit" name="pglineEdit_5">
-              <property name="echoMode">
-               <enum>QLineEdit::Password</enum>
-              </property>
-             </widget>
-            </item>
-           </layout>
+           <widget class="QLineEdit" name="pglineEdit_5">
+            <property name="echoMode">
+             <enum>QLineEdit::Password</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="pglineEdit_6"/>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="pglineEdit_7"/>
           </item>
          </layout>
         </item>
@@ -135,20 +141,32 @@
       </item>
      </layout>
     </item>
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <widget class="QCheckBox" name="checkBox">
+        <property name="text">
+         <string>Remember Username</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_2">
+        <property name="text">
+         <string>Remember Password</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_3">
+        <property name="text">
+         <string>Remember DB</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
    </layout>
-  </widget>
-  <widget class="QPushButton" name="pgpushButton">
-   <property name="geometry">
-    <rect>
-     <x>200</x>
-     <y>250</y>
-     <width>91</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Connect</string>
-   </property>
   </widget>
  </widget>
  <resources/>
