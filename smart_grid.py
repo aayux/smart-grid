@@ -1,103 +1,166 @@
+#Warning: Don't Rename any file!
+'''
+Features added: 1. Deploy Sensors via click on canvas
+								2. POSTGIS Connectivity 
+								3. Buffer around points as range
+
+Bugs: 1. Buffer is only appearing for the sensor which is deployed first - HIGH PRIORITY FIX- DISCUSS FIRST
+			2. Before each new sensor deployment session the range table needs to be dropped manually
+			
+Possible Improvements: 1. CheckBox for remembering parameters
+											 2. Confirmation message on selecting a coordinate while deploying sensors
+											 3. Algorithm to convert Kilometers to Degree using code
+											 4. More versatile data base
+											 5. In sensor deployment form complete ADD, MODIFY , DELETE using SQL queries via psycopg2- Last Priority
+											 6. Exception Handling :P
+
+Assumption: 1. Sensor DataBase has only 4 fields id, name, range, the_geom
+						2. use wgs84 map only else, points will not be georeferenced, SRID=4326 only. Test sensor deployment on world boundaries
+						   shapefile.
+						3. There are only two tables 1. for sensor info 2. for buffer
+
+Note: 1. Wherever there is a uri, connect_string/conn please change data according to your configuration and database
+uri is for adding postgis layer
+			2. Warning: While deploying a sensor please don't click twice on canvas, first click is final location at the moment- make it more flexible by adding the message box mentioned above, clicking twice would lead to problem in database(have to fix this database problem too)
+conn is for connecting to postgresql database and subsequently querying it inside the python code
+'''
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtCore import QObject, pyqtSlot
-
 from qgis.core import *
 from qgis.gui import *
 from qgis.utils import *
 
-import sys, string
+import sys
 import os
-import pdb
-
+import psycopg2
+import psycopg2.extras #To get the queried data in a dict
 # Import GUI files
 
 from smartgrid_gui import Ui_MainWindow
 from login_gui import Ui_Dialog
 from connect_gui import Ui_pgDialog
+from sensor_gui import Ui_sDialog		
 
 # Environment variable QGISHOME must be set to the install directory
 # before running the application
 
 QGIS_PREFIX = os.getenv('QGISHOME')
-uri = QgsDataSourceURI()
+uri=QgsDataSourceURI()
+conn_string = "host='localhost' dbname='sensors' user='pranay360' password='1234'"
+conn = psycopg2.connect(conn_string)
+sname=[]
+sname.insert(0,None)
 
+#Class to show sensor deployment form- DON'T CHANGE
+class sensor(QDialog, Ui_sDialog):
+    global conn,sname
+    def __init__(self, parent=None):
+        super(sensor, self).__init__(parent)
+        self.setupUi(self)
+        self.cursor=conn.cursor(cursor_factory=psycopg2.extras.DictCursor)       
+        self.cursor.execute("select id,name,range from sensors")
+        self.buffer=[]
+        for self.row in self.cursor: #traversing self.cursor as a dict
+            self.comboBox.addItem(self.row['name'])
+            self.buffer.append("ID: "+str(self.row['id'])+"\nSensor Type: "+str(self.row['name'])+"\nSensor Range: "+str(self.row['range']))
+        self.comboBox.connect(self.comboBox,SIGNAL("currentIndexChanged(int)"),
+					self,SLOT("onIndexChange(int)"))
+        self.sinfo.setPlainText(QString(self.buffer[0]))
+        self.comboBox.activated[str].connect(self.onActivated)
+        self.sdeploy.clicked.connect(self.ondeployclicked)
+    
+    def onActivated(self, text):
+    	sname.insert(0,str(text)) #Sensor Selected by user to deploy on map at sname[0]
+    
+    def ondeployclicked(self):
+        self.close()
+    
+    @pyqtSlot(int)
+    def onIndexChange(self, i):
+        self.sinfo.setPlainText(QString(self.buffer[i])) #sensor information
+
+
+#class to capture coordinateswhile hovering mouse over canvas- DON'T CHANGE
+class MapCoords(object):
+    def __init__(self, mainwindow):
+        self.mainwindow = mainwindow
+        # This one is to capture the mouse move for coordinate display
+    
+        QObject.connect(mainwindow.canvas, SIGNAL('xyCoordinates(const QgsPoint&)'), self.updateCoordsDisplay)
+        self.latlon = QLabel("0.0 , 0.0")
+        self.latlon.setFixedWidth(300)
+        self.latlon.setAlignment(Qt.AlignHCenter)
+        self.latlon.setFrameStyle(QFrame.StyledPanel)
+        self.mainwindow.statusbar.addPermanentWidget(self.latlon)
+
+  # Signal handeler for updating coord display
+    def updateCoordsDisplay(self, point):
+
+        capture_string = QString(str(point.x()) + " , " + str(point.y()))
+        self.latlon.setText(capture_string)
+
+#class for postgis connectivity	
 class pgconnect(QDialog,Ui_pgDialog):
     global uri
     def __init__(self, parent=None):
         super(pgconnect, self).__init__(parent)
         self.setuppgUi(self)
+        self.runame=False
+        self.rpwd=False
+        self.rdb=False
+        #ADD Functionality HERE to remember fields using check box, above variables are for storing remembered parameters
         self.pgpushButton.clicked.connect(self.onclick_pglogin)
-        self.hname ='localhost'
-        self.port ='5432'
-        self.dbname = None
-        self.uname = None
-        self.pwd = None
+        self.hname='localhost'
+        self.port='5432'
+        self.dbname=None
+        self.uname=None
+        self.pwd=None
+        self.table=None
+        self.key=None
         self.move(QDesktopWidget().availableGeometry().center() - self.frameGeometry().center())
      
     def onclick_pglogin(self):
-        print 'pass1'
         self.dbname=self.pglineEdit_3.text()
-    	self.uname=self.pglineEdit_4.text()
-    	self.pwd=self.pglineEdit_5.text()
-    	print "lol"
-    	uri.setConnection(self.hname, self.port, str(self.dbname), str(self.uname), str(self.pwd))
-    	print "1"
-    	uri.setDataSource("public", "range", "the_geom",'', "id")
-    	print "2"
-    	self.close()
-    	print 'pass2'
-            
-class MapCoords(object):
-  def __init__(self, mainwindow):
-    self.mainwindow = mainwindow
-    # This one is to capture the mouse move for coordinate display
-    
-    QObject.connect(mainwindow.canvas, SIGNAL('xyCoordinates(const QgsPoint&)'), self.updateCoordsDisplay)
-    self.latlon = QLabel("0.0 , 0.0")
-    self.latlon.setFixedWidth(300)
-    self.latlon.setAlignment(Qt.AlignHCenter)
-    self.latlon.setFrameStyle(QFrame.StyledPanel)
-    self.mainwindow.statusbar.addPermanentWidget(self.latlon)
-
-  # Signal handler for updating coord display
-  def updateCoordsDisplay(self, point):
-
-  	capture_string = QString(str(point.x()) + " , " + str(point.y()))
-  	self.latlon.setText(capture_string)
+        self.uname=self.pglineEdit_4.text()
+        self.pwd=self.pglineEdit_5.text()
+        self.table=self.pglineEdit_6.text()
+        self.key=self.pglineEdit_7.text()
+        uri.setConnection(self.hname, self.port, str(self.dbname), str(self.uname), str(self.pwd))
+        uri.setDataSource("public", str(self.table), "the_geom",'', str(self.key))
+        self.close()
+        
 
 class SmartGrid(QMainWindow, Ui_MainWindow):
-    global uri
-    def __init__(self, parent = None):
+    global uri, sname
+    def __init__(self, parent=None):
         super(SmartGrid, self).__init__(parent)
         self.setupUi(self)
         self.root_flag = False
-        
+        self.count=0 #a counter for no. of sensors deployed
         
         self.setWindowTitle('Smart Grid')
         self.actionImport_Rlayer.triggered.connect(self.onactionImport_Rlayer_toggled)
         self.actionImport_Vlayer.triggered.connect(self.onactionImport_Vlayer_toggled)
         self.actionImport_PGlayer.triggered.connect(self.onactionImport_PGlayer_toggled)
         self.actionPan.triggered.connect(self.click_to_pan)
-
+        
         self.canvas = QgsMapCanvas()
         self.canvas.useImageToRender(False)
-		
-		# New Map Coords display in status bar
-        
         self.map_coords = MapCoords(self)
-
+        self.actionPlot_Sensors.triggered.connect(self.onactionPlot_Sensors_toggled)
         # Reference to root node of layer tree
-
+        
         self.root = QgsProject.instance().layerTreeRoot()
 
         # Convert project into a layer tree so
         # that the layers appear on the canvas
 
-        self.bridge = QgsLayerTreeMapCanvasBridge(self.root, self.canvas)
+        self.bridge = QgsLayerTreeMapCanvasBridge(self.root,
+                self.canvas)
 
         self.canvas.show()
 
@@ -106,9 +169,10 @@ class SmartGrid(QMainWindow, Ui_MainWindow):
         self.model = QgsLayerTreeModel(self.root)
         self.model.setFlag(QgsLayerTreeModel.AllowNodeReorder)
         self.model.setFlag(QgsLayerTreeModel.AllowNodeChangeVisibility)
+        self.model.setFlag(QgsLayerTreeModel.AllowNodeChangeVisibility)
         self.view = QgsLayerTreeView()
         self.view.setModel(self.model)
-                
+
         # Dock legend to main window
 
         self.LegendDock = QDockWidget('Layer Tree', self)
@@ -121,8 +185,93 @@ class SmartGrid(QMainWindow, Ui_MainWindow):
 
         self.layout = QVBoxLayout(self.frame)
         self.layout.addWidget(self.canvas)
+        
+    def onactionPlot_Sensors_toggled(self,checked=None):
+        if checked is None:
+            return
+        if sname[0] is None:
+            self.sdlg=sensor(self) #don't change
+        self.sdlg.show()
+        self.point= QgsMapToolEmitPoint(self.canvas)	#192 and 193-> functionality to identify click on canvas
+        self.canvas.setMapTool(self.point)
+        QObject.connect(self.point, SIGNAL("canvasClicked(const QgsPoint &,Qt::MouseButton)"), self.func) #signal to identify click on canvas
+        
+    def func(self, p):
+        #Don't change this module without discussing
+        #Module to deploy sensors, change conn_string and uri1 according to your database
+        #Setting range around point is not working
+        conn_string = "host='localhost' dbname='sensors' user='pranay360' password='1234'"
+        conn = psycopg2.connect(conn_string)
+        cursor = conn.cursor() #to know more about cursors and psycopg2 related stuff follow zetcode tutorial for psycopg2
+        cursor2 = conn.cursor()
+        dcursor= conn.cursor(cursor_factory=psycopg2.extras.DictCursor) #dict_cursor
+        #if self.count is not 0: need to drop the range table everytime whenever the a new deployment session starts- Don't Know how to implement- Try
+        #cursor.execute("drop table range")
+        capture_string = str(p.x()) + " " +str(p.y())#get coordinates for sensor
+        #add here a message box with "are you sure you want to plot sensor here " Yes/No, if No reinitialize captured string with new point
+        cursor.execute("update sensors set the_geom='SRID=4326;POINT("+capture_string+")' where name='"+sname[0]+"'") #this query is deploting sensors on the basis of name of sensor selected from the dropdown/combox 
+        conn.commit() #commit changes to db
+        dcursor.execute("select range from sensors where name='"+sname[0]+"'")
+        for row in dcursor:
+            srange=row['range'] #extracting range from name in dropdown/combobox using sql query, SRANGE IS CURRENTLY IN DEGREES, ADD ALGORITHM TO CHANGE KILOMETERS TO DEGREE AS ST_BUFFER TAKES RADIUS IN DEGREE ONLY.
+        
+        if self.count is 0:
+            print "create"
+            cursor2.execute("CREATE TABLE range AS SELECT id, ST_Buffer(the_geom,"+str(srange)+") AS the_geom FROM sensors where name='"+sname[0]+"'") #srange in degree
+            conn.commit()
+        else:
+            #ISSUE IN SETTING A BUFFER, DONT CHANGE WITHOUT DISCUSSING - next 3 lines not working don't know why, although insert and inserted are printed on terminal--- query not wrong.
+            print "insert", sname[0]
+            cursor2.execute("INSERT INTO SELECT id, ST_Buffer(the_geom,"+str(srange)+") AS the_geom FROM sensors where name='"+sname[0]+"'")
+            print 'inserted'
+            conn.commit()
+        conn.close()
+        uri1=QgsDataSourceURI()
+        uri1.setConnection('localhost', '5432', 'sensors', 'pranay360', '1234')
+        uri1.setDataSource('public', 'sensors', 'the_geom','', 'id')
+        self.canvas.refresh()
+        if self.count is not 0:
+            self.root.removeLayer(self.vlayer)
+        self.vlayer = QgsVectorLayer(uri1.uri(), "sensors", "postgres") #loading a posgres database table as a vector layer using postgis
+        #all palyr related stuff is to display label around deployed sensor
+        palyr= QgsPalLayerSettings()
+        self.canvas.mapRenderer().setLabelingEngine(QgsPalLabeling())
+        palyr.readFromLayer(self.vlayer)
+        palyr.enabled = True 
+        palyr.fieldName = 'name'
+        palyr.placement= QgsPalLayerSettings.OverPoint
+        palyr.setDataDefinedProperty(QgsPalLayerSettings.Size,True,True,'8','')
+        palyr.writeToLayer(self.vlayer)
+        #normal procedure to add vector layer
+        if not self.vlayer.isValid():
+            print 'Layer failed to load!'
+            return
+        QgsMapLayerRegistry.instance().addMapLayer(self.vlayer, False)
+        if self.root_flag is False:
+            rootnode = self.root.insertLayer(0, self.vlayer)
+            print 'Loaded root'
+            self.root_flag = True
+        else:
+            self.root.insertLayer(0, self.vlayer)
+        self.statusbar.showMessage("Selected: ")
+        self.count=self.count+1
+        #setting buffer
+        uri1.setConnection('localhost', '5432', 'sensors', 'pranay360', '1234')
+        uri1.setDataSource('public', 'range', 'the_geom','', 'id')
+        self.vlayer2 = QgsVectorLayer(uri1.uri(), "range", "postgres")
+        if not self.vlayer2.isValid():
+            print 'Layer failed to load!'
+            return
+        QgsMapLayerRegistry.instance().addMapLayer(self.vlayer2, False)
+        if self.root_flag is False:
+            rootnode = self.root.insertLayer(0, self.vlayer2)
+            print 'Loaded root'
+            self.root_flag = True
+        else:
+            self.root.insertLayer(0, self.vlayer2)
+                             
     
-    def onactionImport_Rlayer_toggled(self, checked = None):
+    def onactionImport_Rlayer_toggled(self, checked=None):
         if checked is None:
             return
         fileName = QFileDialog.getOpenFileName(self, 'Open Layer', '.',
@@ -135,7 +284,6 @@ class SmartGrid(QMainWindow, Ui_MainWindow):
             return
 
         # Add layer to the registry....
-        self.temp_layer=raster_layer
         QgsMapLayerRegistry.instance().addMapLayer(raster_layer, False)
         if self.root_flag is False:
             rootnode = self.root.insertLayer(0, raster_layer)
@@ -156,14 +304,11 @@ class SmartGrid(QMainWindow, Ui_MainWindow):
             print 'Layer failed to load!'
             return
 
-        # Add layer to the registry
         palyr= QgsPalLayerSettings()
         self.canvas.mapRenderer().setLabelingEngine(QgsPalLabeling())
         palyr.readFromLayer(vector_layer)
         palyr.enabled = True 
-        palyr.fieldName = 'Text'
-        #palyr.fontSizeInMapUnits = True
-        #palyr.textColor = Qt.red
+        palyr.fieldName = 'NAME'
         palyr.placement= QgsPalLayerSettings.OverPoint
         palyr.setDataDefinedProperty(QgsPalLayerSettings.Size,True,True,'8','')
         palyr.writeToLayer(vector_layer)
@@ -177,14 +322,10 @@ class SmartGrid(QMainWindow, Ui_MainWindow):
             self.root.insertLayer(0, vector_layer)
     
     def onactionImport_PGlayer_toggled(self):
-        print "abcd"
-        self.dlg = pgconnect(self)
+        self.dlg= pgconnect(self)
         self.dlg.show()
-        print "back"
         self.dlg.exec_()
-        print "done"
         vlayer = QgsVectorLayer(uri.uri(), "people", "postgres")
-    	print "3"
     	if not vlayer.isValid():
             print 'Layer failed to load!'
             return
@@ -249,5 +390,3 @@ def main(argv):
 if __name__ == '__main__':
     main(sys.argv)
 
-			
-			

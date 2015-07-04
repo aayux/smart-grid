@@ -42,6 +42,7 @@
    <addaction name="actionPan"/>
    <addaction name="actionPlot_Sensors"/>
    <addaction name="actionImport_PGlayer"/>
+   <addaction name="actionGetCoordinates"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionImport_Vlayer">
@@ -111,6 +112,14 @@
    </property>
    <property name="text">
     <string>Import_PGlayer</string>
+   </property>
+  </action>
+  <action name="actionGetCoordinates">
+   <property name="text">
+    <string>GetCoordinates</string>
+   </property>
+   <property name="toolTip">
+    <string>GetCoordinates</string>
    </property>
   </action>
  </widget>
