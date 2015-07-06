@@ -1,32 +1,3 @@
-#Warning: Don't Rename any file!
-'''
-Features added: 1. Deploy Sensors via click on canvas
-								2. POSTGIS Connectivity 
-								3. Buffer around points as range
-
-Bugs: 1. Buffer is only appearing for the sensor which is deployed first - HIGH PRIORITY FIX- DISCUSS FIRST
-			2. Before each new sensor deployment session the range table needs to be dropped manually
-			
-Possible Improvements: 1. CheckBox for remembering parameters
-											 2. Confirmation message on selecting a coordinate while deploying sensors
-											 3. Algorithm to convert Kilometers to Degree using code
-											 4. More versatile data base
-											 5. In sensor deployment form complete ADD, MODIFY , DELETE using SQL queries via psycopg2- Last Priority
-											 6. Exception Handling :P
-
-Assumption: 1. Sensor DataBase has only 4 fields id, name, range, the_geom
-						2. use wgs84 map only else, points will not be georeferenced, SRID=4326 only. Test sensor deployment on world boundaries
-						   shapefile.
-						3. There are only two tables 1. for sensor info 2. for buffer
-
-Note: 1. Wherever there is a uri, connect_string/conn please change data according to your configuration and database
-uri is for adding postgis layer
-			2. Warning: While deploying a sensor please don't click twice on canvas, first click is final location at the moment- make it more flexible by adding the message box mentioned above, clicking twice would lead to problem in database(have to fix this database problem too)
-conn is for connecting to postgresql database and subsequently querying it inside the python code
-
-update range set the_geom= (select st_buffer(people.the_geom,25)) from people where range.id=1;
-
-'''
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
